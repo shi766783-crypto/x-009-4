@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue';
 import { categories, itemStatuses } from '../constants/categories';
 import { fileToBase64, normalizeItem } from '../utils/items';
+import { isFutureDate, todayInputDate } from '../utils/date';
 
 const props = defineProps({
   draft: { type: Object, default: null }
@@ -15,7 +16,7 @@ const emptyDraft = () =>
     category: '家电',
     brandModel: '',
     channel: '',
-    purchaseDate: new Date().toISOString().slice(0, 10),
+    purchaseDate: todayInputDate(),
     price: 0,
     warrantyMonths: 12,
     location: '',
@@ -34,6 +35,11 @@ watch(
   { immediate: true }
 );
 
+const today = todayInputDate();
+const purchaseDateError = computed(() =>
+  isFutureDate(form.purchaseDate) ? '购买日期不能晚于今天，请检查后再保存' : ''
+);
+
 const warrantyEndDate = computed(() => normalizeItem(form).warrantyEndDate);
 
 async function setPhoto(event, field) {
@@ -41,6 +47,7 @@ async function setPhoto(event, field) {
 }
 
 function submit() {
+  if (purchaseDateError.value) return;
   emit('save', normalizeItem(form));
 }
 </script>
@@ -75,7 +82,15 @@ function submit() {
       </label>
       <label>
         <span>购买日期</span>
-        <input v-model="form.purchaseDate" type="date" required />
+        <input
+          v-model="form.purchaseDate"
+          type="date"
+          required
+          :max="today"
+          :class="{ 'input-error': purchaseDateError }"
+          :aria-invalid="Boolean(purchaseDateError)"
+        />
+        <small v-if="purchaseDateError" class="field-error">{{ purchaseDateError }}</small>
       </label>
       <label>
         <span>购买价格</span>

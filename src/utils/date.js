@@ -47,6 +47,16 @@ export function getYearsSince(value, now = new Date()) {
   return Math.max(0, years);
 }
 
+export function todayInputDate(now = new Date()) {
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
+export function isFutureDate(value, now = new Date()) {
+  if (!value) return false;
+  return String(value) > todayInputDate(now);
+}
+
 export function isSameYear(value, year = new Date().getFullYear()) {
   const date = toDate(value);
   return Boolean(date && date.getFullYear() === year);

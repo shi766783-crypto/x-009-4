@@ -9,7 +9,8 @@ export function getResidualValue(item, now = new Date()) {
   const price = Number(item.price || 0);
   const rate = getDepreciationRate(item.category);
   const years = getYearsSince(item.purchaseDate, now);
-  const residual = price * Math.pow(1 - rate, years);
+  // 购买日期在未来时年限按 0 处理；同时封顶残值，绝不超过原价
+  const residual = Math.min(price, price * Math.pow(1 - rate, Math.max(0, years)));
   return Math.max(0, Math.round(residual));
 }
 
