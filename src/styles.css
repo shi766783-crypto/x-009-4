@@ -269,6 +269,17 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
 }
 
+input[aria-invalid='true'] {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+.field-error {
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .wide {
   grid-column: 1 / -1;
 }

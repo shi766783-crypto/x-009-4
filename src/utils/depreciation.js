@@ -10,7 +10,8 @@ export function getResidualValue(item, now = new Date()) {
   const rate = getDepreciationRate(item.category);
   const years = getYearsSince(item.purchaseDate, now);
   const residual = price * Math.pow(1 - rate, years);
-  return Math.max(0, Math.round(residual));
+  // 残值不得超过原价，防止未来日期等异常输入导致物品“升值”
+  return Math.max(0, Math.min(price, Math.round(residual)));
 }
 
 export function getDepreciationText(item) {

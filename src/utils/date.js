@@ -47,6 +47,21 @@ export function getYearsSince(value, now = new Date()) {
   return Math.max(0, years);
 }
 
+export function getTodayInputDate(now = new Date()) {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function isFutureDate(value, now = new Date()) {
+  const date = toDate(value);
+  if (!date) return false;
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const valueDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return valueDay.getTime() > todayStart.getTime();
+}
+
 export function isSameYear(value, year = new Date().getFullYear()) {
   const date = toDate(value);
   return Boolean(date && date.getFullYear() === year);

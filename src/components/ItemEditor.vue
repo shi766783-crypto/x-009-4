@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue';
 import { categories, itemStatuses } from '../constants/categories';
 import { fileToBase64, normalizeItem } from '../utils/items';
+import { getTodayInputDate, isFutureDate } from '../utils/date';
 
 const props = defineProps({
   draft: { type: Object, default: null }
@@ -35,12 +36,17 @@ watch(
 );
 
 const warrantyEndDate = computed(() => normalizeItem(form).warrantyEndDate);
+const todayInputDate = getTodayInputDate();
+const purchaseDateError = computed(() =>
+  isFutureDate(form.purchaseDate) ? '购买日期不能晚于今天，请重新选择。' : ''
+);
 
 async function setPhoto(event, field) {
   form[field] = await fileToBase64(event.target.files?.[0]);
 }
 
 function submit() {
+  if (purchaseDateError.value) return;
   emit('save', normalizeItem(form));
 }
 </script>
@@ -75,7 +81,17 @@ function submit() {
       </label>
       <label>
         <span>购买日期</span>
-        <input v-model="form.purchaseDate" type="date" required />
+        <input
+          v-model="form.purchaseDate"
+          type="date"
+          required
+          :max="todayInputDate"
+          :aria-invalid="purchaseDateError ? 'true' : 'false'"
+          :aria-describedby="purchaseDateError ? 'purchase-date-error' : null"
+        />
+        <small v-if="purchaseDateError" id="purchase-date-error" class="field-error">
+          {{ purchaseDateError }}
+        </small>
       </label>
       <label>
         <span>购买价格</span>
